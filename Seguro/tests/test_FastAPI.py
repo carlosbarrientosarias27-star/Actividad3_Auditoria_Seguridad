@@ -12,8 +12,9 @@ def setup_db():
     """
     Configura una base de datos SQLite en memoria antes de cada test.
     """
-    # Creamos conexión en memoria
-    conn = sqlite3.connect(':memory:')
+    # ✅ CLAVE: Añadimos check_same_thread=False para permitir que FastAPI 
+    # use la conexión desde sus hilos internos.
+    conn = sqlite3.connect(':memory:', check_same_thread=False)
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
 
