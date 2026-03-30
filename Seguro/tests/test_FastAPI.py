@@ -7,6 +7,7 @@ from Seguro.FastAPI import app
 
 client = TestClient(app)
 
+
 @pytest.fixture(autouse=True)
 def setup_db(monkeypatch): # Usamos la fixture monkeypatch de pytest
     """
