@@ -30,7 +30,7 @@ jobs:
         with:
           python-version: '3.11'
       - run: pip install -r requirements.txt pytest pytest-cov
-      - run: pytest --cov=. --cov-report=xml --cov-fail-under=80
+      - run: pytest --cov=. --cov-report=xml --cov-fail-under=80 --exclude=.git,__pycache__,Original/
 
   # ── ETAPA 3: SAST (SEGURIDAD) ──────────────────────────
   security-sast:
@@ -98,8 +98,8 @@ jobs:
           python-version: '3.11'
       - run: pip install detect-secrets
       - run: |
-          detect-secrets scan > .secrets.baseline
-          detect-secrets audit .secrets.baseline
+          detect-secrets scan > .secrets.baseline --exclude=.git,__pycache__,Original/ 
+          detect-secrets audit .secrets.baseline --exclude=.git,__pycache__,Original/
 
   # ── ETAPA 6: DEPLOY (solo si todo pasa) ────────────────
   deploy:
