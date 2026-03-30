@@ -8,11 +8,13 @@ app = FastAPI()
 DB = os.getenv('DATABASE_NAME', 'usuarios.db')
 SECRET = os.getenv('APP_SECRET_KEY', 'una-clave-muy-segura-y-larga')
 
+
 def get_conn():
     conn = sqlite3.connect(DB)
     # Row permite acceder a los datos como un diccionario: user['email']
     conn.row_factory = sqlite3.Row 
     return conn
+
 
 @app.post('/login')
 def login(email: str, password: str):
@@ -26,6 +28,7 @@ def login(email: str, password: str):
     if user:
         return {'status': 'ok', 'user': dict(user)}
     raise HTTPException(status_code=401, detail="Credenciales inválidas")
+
 
 @app.post('/registro')
 def registro(nombre: str, email: str, password: str, edad: int):
@@ -45,6 +48,7 @@ def registro(nombre: str, email: str, password: str, edad: int):
     
     return {'status': 'registrado', 'nombre': nombre}
 
+
 @app.get('/usuario/{id}')
 def get_user(id: int):
     conn = get_conn()
@@ -53,6 +57,7 @@ def get_user(id: int):
     if row:
         return dict(row)
     raise HTTPException(status_code=404, detail="Usuario no encontrado")
+
 
 @app.delete('/usuario/{id}')
 def delete_user(id: int):
