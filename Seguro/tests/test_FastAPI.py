@@ -1,20 +1,23 @@
 import pytest
 import sqlite3
 from fastapi.testclient import TestClient
+# Asegúrate de importar el módulo completo para poder parchearlo
+import Seguro.FastAPI as FastAPI_module 
 from Seguro.FastAPI import app
 
-# Creamos el cliente de pruebas
 client = TestClient(app)
 
-
 @pytest.fixture(autouse=True)
-def setup_db():
-    # ✅ Añade check_same_thread=False
+def setup_db(monkeypatch): # Usamos la fixture monkeypatch de pytest
+    """
+    Configura una base de datos SQLite en memoria compartida.
+    """
+    # ✅ Usamos check_same_thread=False para los hilos de FastAPI
     conn = sqlite3.connect(':memory:', check_same_thread=False)
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
 
-    # Creamos la tabla necesaria para los tests
+    # Creamos la tabla
     cursor.execute("""
         CREATE TABLE users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -25,19 +28,18 @@ def setup_db():
         )
     """)
 
-    # Insertamos un usuario de prueba
+    # Insertamos usuario de prueba
     cursor.execute(
         "INSERT INTO users (nombre, email, password, edad) VALUES (?, ?, ?, ?)",
         ("Test User", "test@example.com", "password123", 30)
     )
     conn.commit()
 
-    # Sobrescribimos la función get_conn del módulo original para que use esta DB
-    with pytest.MonkeyPatch().context() as m:
-        import FastAPI
-        m.setattr(FastAPI, "get_conn", lambda: conn)
-        yield conn
+    # ✅ SOBRESCRIBIMOS get_conn directamente en el módulo cargado
+    # Esto garantiza que FastAPI use nuestra conexión en memoria
+    monkeypatch.setattr(FastAPI_module, "get_conn", lambda: conn)
 
+    yield conn
     conn.close()
 
 
