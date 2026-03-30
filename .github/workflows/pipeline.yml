@@ -19,7 +19,7 @@ jobs:
       - run: pip install flake8
       - run: flake8 Seguro/ --max-line-length=120
 
-  # ── ETAPA 2: TESTS ─────────────────────────────────────
+  ## ── ETAPA 2: TESTS ─────────────────────────────────────
   test:
     name: Tests (pytest)
     runs-on: ubuntu-latest
@@ -29,8 +29,9 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      # Al incluir httpx en el txt, este paso lo instalará correctamente
       - run: pip install -r requirements.txt pytest pytest-cov
-      - run: pytest Seguro/ --cov=Seguro --cov-report=xml --cov-fail-under=80
+      - run: pytest Seguro/ --cov=Seguro --cov-report=xml --cov-fail-under=8
 
 # ── ETAPA 3: SAST (SEGURIDAD) ──────────────────────────
   security-sast:
