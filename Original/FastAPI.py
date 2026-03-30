@@ -1,7 +1,8 @@
 # api_usuarios.py  — CÓDIGO VULNERABLE (solo para ejercicio)
 
 from fastapi import FastAPI
-import sqlite3, os
+import sqlite3
+import os
 
 app = FastAPI()
 
