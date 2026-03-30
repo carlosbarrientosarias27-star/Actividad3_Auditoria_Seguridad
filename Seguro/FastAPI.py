@@ -12,7 +12,7 @@ SECRET = os.getenv('APP_SECRET_KEY', 'una-clave-muy-segura-y-larga')
 def get_conn():
     conn = sqlite3.connect(DB)
     # Row permite acceder a los datos como un diccionario: user['email']
-    conn.row_factory = sqlite3.Row 
+    conn.row_factory = sqlite3.Row
     return conn
 
 
@@ -24,7 +24,7 @@ def login(email: str, password: str):
     query = "SELECT nombre, email FROM users WHERE email=? AND password=?"
     cursor.execute(query, (email, password))
     user = cursor.fetchone()
-    
+
     if user:
         return {'status': 'ok', 'user': dict(user)}
     raise HTTPException(status_code=401, detail="Credenciales inválidas")
@@ -35,7 +35,7 @@ def registro(nombre: str, email: str, password: str, edad: int):
     # ✅ SEGURO: Validación básica y parámetros
     if edad < 0 or edad > 120:
         raise HTTPException(status_code=400, detail="Edad no válida")
-        
+
     conn = get_conn()
     try:
         conn.execute(
@@ -45,7 +45,7 @@ def registro(nombre: str, email: str, password: str, edad: int):
         conn.commit()
     except sqlite3.IntegrityError:
         raise HTTPException(status_code=400, detail="El email ya existe")
-    
+
     return {'status': 'registrado', 'nombre': nombre}
 
 
@@ -65,8 +65,8 @@ def delete_user(id: int):
     # ✅ SEGURO: Verifica si existe antes de decir que lo borró
     cursor = conn.execute('DELETE FROM users WHERE id=?', (id,))
     conn.commit()
-    
+
     if cursor.rowcount == 0:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
-        
+
     return {'status': 'eliminado', 'id': id}
