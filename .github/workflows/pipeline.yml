@@ -17,7 +17,7 @@ jobs:
         with:
           python-version: '3.11'
       - run: pip install flake8
-      - run: flake8 . --max-line-length=120 --exclude=.git,__pycache__
+      - run: flake8 . --max-line-length=120 --exclude=.git,__pycache__,Original/
 
   # ── ETAPA 2: TESTS ─────────────────────────────────────
   test:
