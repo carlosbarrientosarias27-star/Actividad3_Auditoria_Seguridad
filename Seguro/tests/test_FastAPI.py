@@ -1,10 +1,11 @@
 import pytest
 import sqlite3
 from fastapi.testclient import TestClient
-from FastAPI import app, get_conn
+from FastAPI import app
 
 # Creamos el cliente de pruebas
 client = TestClient(app)
+
 
 @pytest.fixture(autouse=True)
 def setup_db():
@@ -15,7 +16,7 @@ def setup_db():
     conn = sqlite3.connect(':memory:')
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
-    
+
     # Creamos la tabla necesaria para los tests
     cursor.execute("""
         CREATE TABLE users (
@@ -26,7 +27,7 @@ def setup_db():
             edad INTEGER
         )
     """)
-    
+
     # Insertamos un usuario de prueba
     cursor.execute(
         "INSERT INTO users (nombre, email, password, edad) VALUES (?, ?, ?, ?)",
@@ -39,8 +40,9 @@ def setup_db():
         import FastAPI
         m.setattr(FastAPI, "get_conn", lambda: conn)
         yield conn
-    
+
     conn.close()
+
 
 # --- Tests de Endpoints ---
 
@@ -50,10 +52,12 @@ def test_login_exitoso():
     assert response.json()["status"] == "ok"
     assert response.json()["user"]["email"] == "test@example.com"
 
+
 def test_login_fallido():
     response = client.post("/login", params={"email": "test@example.com", "password": "wrong_password"})
     assert response.status_code == 401
     assert response.json()["detail"] == "Credenciales inválidas"
+
 
 def test_registro_usuario_nuevo():
     payload = {
@@ -67,10 +71,12 @@ def test_registro_usuario_nuevo():
     assert response.status_code == 200
     assert response.json()["nombre"] == "Nuevo"
 
+
 def test_registro_edad_invalida():
     response = client.post("/registro", params={"nombre": "A", "email": "b@c.com", "password": "p", "edad": 150})
     assert response.status_code == 400
     assert "Edad no válida" in response.json()["detail"]
+
 
 def test_get_usuario_existente():
     # El usuario insertado en la fixture tiene ID 1
@@ -78,16 +84,18 @@ def test_get_usuario_existente():
     assert response.status_code == 200
     assert response.json()["nombre"] == "Test User"
 
+
 def test_get_usuario_no_existente():
     response = client.get("/usuario/999")
     assert response.status_code == 404
+
 
 def test_delete_usuario():
     # Borramos al usuario 1
     response = client.delete("/usuario/1")
     assert response.status_code == 200
     assert response.json()["status"] == "eliminado"
-    
+
     # Verificamos que ya no existe
     check = client.get("/usuario/1")
     assert check.status_code == 404
