@@ -1,7 +1,7 @@
 import pytest
 import sqlite3
 from fastapi.testclient import TestClient
-from FastAPI import app
+from Seguro.FastAPI import app
 
 # Creamos el cliente de pruebas
 client = TestClient(app)
