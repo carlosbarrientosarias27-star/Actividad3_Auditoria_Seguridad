@@ -92,14 +92,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # historial completo para detectar secretos pasados
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
       - run: pip install detect-secrets
       - run: |
-          detect-secrets scan > .secrets.baseline --exclude=.git,__pycache__,Original/ 
-          detect-secrets audit .secrets.baseline --exclude=.git,__pycache__,Original/
+          # Escaneamos solo la carpeta Seguro/ y usamos --exclude-files para patrones
+          detect-secrets scan Seguro/ --exclude-files '\.git|__pycache__' > .secrets.baseline
+          detect-secrets audit .secrets.baseline
 
   # ── ETAPA 6: DEPLOY (solo si todo pasa) ────────────────
   deploy:
