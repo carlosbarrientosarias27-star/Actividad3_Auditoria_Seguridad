@@ -9,7 +9,7 @@ client = TestClient(app)
 
 
 @pytest.fixture(autouse=True)
-def setup_db(monkeypatch): # Usamos la fixture monkeypatch de pytest
+def setup_db(monkeypatch):  # Usamos la fixture monkeypatch de pytest
     """
     Configura una base de datos SQLite en memoria compartida.
     """
